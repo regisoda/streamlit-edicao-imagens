@@ -16,7 +16,7 @@ def load_image(image_file):
 
 def main_loop():
 
-    st.title('Simular - Edição de Imagens')
+    st.title('Tratamento de Imagens')
 
     # st.header("Simular edições de imagens")
     # st.subheader("Imagem")
@@ -36,17 +36,17 @@ def main_loop():
     original_image = np.array(original_image)
 
     if chk_original_image:
-        st.text("Original")
+        st.subheader("Imagem Original")
         st.image([original_image])
 
-    st.text("Processada")
+    st.subheader("Imagem Processada")
     processed_image = original_image
 
     processing_count = 0
 
     if chk_auto_rotate:
         processing_count += 1
-        processed_image, angle = auto_rotate(processed_image, True)
+        processed_image, angle = auto_rotate(processed_image, False)
         st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
 
     if chk_extreme_points:

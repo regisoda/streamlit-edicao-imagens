@@ -1,16 +1,13 @@
 import os
 import cv2
 
-frame = 0
-record = False
-
 
 def write_frame(img, contours=None, rect=None):
     if not record:
         return
     global frame
     frame += 1
-    frameType = "X"
+    frameType = ""
     if contours:
         # print('contours', contours)
         frameType = "C"
@@ -120,23 +117,22 @@ def get_boundaries(img, contours):
     return (minx, miny, maxx, maxy)
 
 
-def crop(img, boundaries):
+def crop(img, boundaries, space=20):
     """Crop the image to the given boundaries."""
     minx, miny, maxx, maxy = boundaries
     if (maxx == 0 or maxy == 0):
         print("not crop - original")
         return img
 
-    space = 20
     print("crop", minx, miny, maxx, maxy)
     return img[miny-space:maxy+space, minx-space:maxx+space]
 
 
 def autocrop_image(img, record_process=False):
-    # global to track if process frames should be written
     global record
-    record = record_process
     global frame
+
+    record = record_process
     frame = 0
 
     if record:
