@@ -2,20 +2,17 @@ import os
 import cv2
 
 
-def write_frame(img, contours=None, rect=None):
+def write_frame(img, contours=None, rect=None, frameType=""):
     if not record:
         return
     global frame
     frame += 1
-    frameType = ""
     if contours:
         # print('contours', contours)
-        frameType = "C"
         img = img.copy()
         cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
     if rect:
         # print('rect', rect)
-        frameType = "R"
         img = img.copy()
         cv2.rectangle(img, (rect[0], rect[1]),
                       (rect[2], rect[3]), (255, 255, 0), 3)
@@ -72,22 +69,23 @@ def get_contours(img):
     tl = 100
     ret, thresh = cv2.threshold(imgray, tl, 255, 0)
     # print('thresh', thresh)
-    print("Frame A", frame)
-    write_frame(thresh)
+    # print("Frame A", frame)
+    write_frame(thresh, frameType='threshold_{:02d}'.format(tl))
     while white_percent(thresh) > 0.85:
         tl += 10
         ret, thresh = cv2.threshold(imgray, tl, 255, 0)
-        write_frame(thresh)
+        write_frame(
+            thresh, frameType='threshold_{:02d}'.format(tl))
 
     contours, hierarchy = cv2.findContours(thresh, 1, 2)
-    print("Frame B", frame)
-    write_frame(img, contours=contours)
+    # print("Frame B", frame)
+    write_frame(img, contours=contours, frameType='contours')
 
     # filter contours that are too large or small
     contours = [cc for cc in contours if contourOK(img, cc)]
-    print("Frame C", frame)
-    write_frame(img, contours=contours)
-    print("Last Frame", frame)
+    # print("Frame C", frame)
+    write_frame(img, contours=contours, frameType='filterContours')
+    # print("Last Frame", frame)
     return contours
 
 
@@ -111,8 +109,9 @@ def get_boundaries(img, contours):
         if y + h > maxy:
             maxy = y + h
 
-    print("get_boundaries", frame, minx, miny, maxx, maxy)
-    write_frame(img, rect=(minx, miny, maxx, maxy))
+    # print("get_boundaries", frame, minx, miny, maxx, maxy)
+    write_frame(img, rect=(minx, miny, maxx, maxy),
+                frameType='boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(minx, miny, maxx, maxy))
 
     return (minx, miny, maxx, maxy)
 
@@ -141,13 +140,13 @@ def autocrop_image(img, record_process=False):
         for f in os.listdir(dir):
             os.remove(os.path.join(dir, f))
 
-    write_frame(img)
+    write_frame(img, frameType="initial")
 
     contours = get_contours(img)
     bounds = get_boundaries(img, contours)
     cropped = crop(img, bounds)
     if get_size(cropped) < 10000:
         print("resulting image too small, skipping output", get_size(cropped))
-        return  # too small
+        return img  # too small
 
     return cropped

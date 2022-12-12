@@ -5,6 +5,8 @@ import numpy as np
 from rotate import auto_rotate
 from extreme_points import extreme_points
 from crop import autocrop_image
+from external_contours import external_contours
+from rectangle import external_rectangle
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -26,6 +28,8 @@ def main_loop():
     chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
     chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
     chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
+    chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
+    chk_external_contour = st.sidebar.checkbox('Contornos Externos')
 
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
@@ -58,6 +62,16 @@ def main_loop():
         processing_count += 1
         st.text(f"{processing_count}) Auto-recorte")
         processed_image = autocrop_image(processed_image, True)
+
+    if chk_external_rectangle:
+        processing_count += 1
+        st.text(f"{processing_count}) Retângulo Externo")
+        processed_image = external_rectangle(processed_image)
+
+    if chk_external_contour:
+        processing_count += 1
+        st.text(f"{processing_count}) Contorno Externo")
+        processed_image = external_contours(processed_image)
 
     st.image([processed_image])
 
