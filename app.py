@@ -1,6 +1,8 @@
 import streamlit as st
 from PIL import Image
-
+from rotate import auto_rotate
+import cv2
+import numpy as np
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -26,10 +28,21 @@ def main_loop():
         return None
 
     original_image = load_image(image_file)
+    original_image = np.array(original_image)
+
+    # image = cv2.imread(image_file)
+
+    # gray_scale = cv2.cvtColor(original_image, cv2.COLOR_RGB2GRAY)
+    # st.image(gray_scale, width=300)
 
     if chk_original_image:
         st.text("Original")
         st.image([original_image])
+
+    processed_image, angle = auto_rotate(original_image)
+    st.text("Processada")
+    st.text(f"Angulo: {angle:.04f}")
+    st.image([processed_image])
 
 
 if __name__ == '__main__':
