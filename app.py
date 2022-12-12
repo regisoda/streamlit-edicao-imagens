@@ -1,9 +1,10 @@
 import streamlit as st
 from PIL import Image
-from rotate import auto_rotate
-from extreme_points import extreme_points
 import cv2
 import numpy as np
+from rotate import auto_rotate
+from extreme_points import extreme_points
+from crop import autocrop_image
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -24,6 +25,7 @@ def main_loop():
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
     chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
     chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
+    chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
 
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
@@ -49,8 +51,13 @@ def main_loop():
 
     if chk_extreme_points:
         processing_count += 1
-        st.text(f"{processing_count}) Extreme Points")
+        st.text(f"{processing_count}) Pontos extremos")
         processed_image = extreme_points(processed_image)
+
+    if chk_auto_crop:
+        processing_count += 1
+        st.text(f"{processing_count}) Auto-recorte")
+        processed_image = autocrop_image(processed_image, True)
 
     st.image([processed_image])
 
