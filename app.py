@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 from rotate import auto_rotate
+from extreme_points import extreme_points
 import cv2
 import numpy as np
 
@@ -22,6 +23,7 @@ def main_loop():
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
     chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
+    chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
 
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
@@ -42,8 +44,13 @@ def main_loop():
 
     if chk_auto_rotate:
         processing_count += 1
-        processed_image, angle = auto_rotate(original_image, True)
+        processed_image, angle = auto_rotate(processed_image, True)
         st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
+
+    if chk_extreme_points:
+        processing_count += 1
+        st.text(f"{processing_count}) Extreme Points")
+        processed_image = extreme_points(processed_image)
 
     st.image([processed_image])
 
