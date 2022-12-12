@@ -13,17 +13,21 @@ def auto_rotate(img, draw_lines=False):
                             100, minLineLength=100, maxLineGap=5)
 
     angles = []
-    for [[x1, y1, x2, y2]] in lines:
+    median_angle = 0
+    img_rotated = img
 
-        if (draw_lines):
-            # DRAW LINES DETECTED
-            cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+    if lines is not None:
+        for [[x1, y1, x2, y2]] in lines:
+            if (draw_lines):
+                # DRAW LINES DETECTED
+                cv2.line(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-        angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
-        angles.append(angle)
+            angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
+            angles.append(angle)
 
-    median_angle = np.median(angles)
-    # print(f"Angle is {median_angle:.04f}")
-    img_rotated = ndimage.rotate(img, median_angle)
+        median_angle = np.median(angles)
+
+        # print(f"Angle is {median_angle:.04f}")
+        img_rotated = ndimage.rotate(img, median_angle)
 
     return (img_rotated, median_angle)

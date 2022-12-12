@@ -42,7 +42,7 @@ def main_loop():
 
     if chk_auto_rotate:
         processing_count += 1
-        processed_image, angle = auto_rotate(original_image)
+        processed_image, angle = auto_rotate(original_image, True)
         st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
 
     st.image([processed_image])
