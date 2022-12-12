@@ -13,11 +13,12 @@ def load_image(image_file):
 def main_loop():
 
     st.title('Simular - Edição de Imagens')
+
     # st.header("Simular edições de imagens")
+    # st.subheader("Imagem")
 
-    st.subheader("Imagem")
-
-    chk_exibir_original = st.sidebar.checkbox('Exibir Imagem Original')
+    st.sidebar.text("Opções:")
+    chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
 
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
@@ -26,7 +27,7 @@ def main_loop():
 
     original_image = load_image(image_file)
 
-    if chk_exibir_original:
+    if chk_original_image:
         st.text("Original")
         st.image([original_image])
 
