@@ -7,6 +7,7 @@ from extreme_points import extreme_points
 from crop import autocrop_image
 from external_contours import external_contours
 from rectangle import external_rectangle
+from screw_text import screw_text
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -26,6 +27,7 @@ def main_loop():
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
     chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
+    chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
     chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
     chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
     chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
@@ -52,6 +54,11 @@ def main_loop():
         processing_count += 1
         processed_image, angle = auto_rotate(processed_image, False)
         st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
+
+    if chk_auto_rotate_text:
+        processing_count += 1
+        processed_image, angle = screw_text(processed_image, True)
+        st.text(f"{processing_count}) Auto-rotação - texto: {angle:.04f}")
 
     if chk_extreme_points:
         processing_count += 1
