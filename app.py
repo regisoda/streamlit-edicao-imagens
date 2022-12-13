@@ -8,6 +8,7 @@ from crop import autocrop_image
 from external_contours import external_contours
 from rectangle import external_rectangle
 from screw_text import screw_text
+from auto_adjust import auto_adjust
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -24,8 +25,13 @@ def main_loop():
     # st.header("Simular edições de imagens")
     # st.subheader("Imagem")
 
+    threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
+
+    st.write("Threshold:", threshold)
+
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
+    chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
     chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
     chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
     chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
@@ -49,6 +55,11 @@ def main_loop():
     processed_image = original_image
 
     processing_count = 0
+
+    if chk_auto_adjust:
+        processing_count += 1
+        processed_image = auto_adjust(processed_image, threshold, True)
+        st.text(f"{processing_count}) Auto-ajuste")
 
     if chk_auto_rotate:
         processing_count += 1
