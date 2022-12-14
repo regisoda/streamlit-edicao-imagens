@@ -1,6 +1,5 @@
 import streamlit as st
 from PIL import Image
-import cv2
 import numpy as np
 from rotate import auto_rotate
 from extreme_points import extreme_points
