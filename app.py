@@ -1,12 +1,12 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-from rotate import auto_rotate
-from extreme_points import extreme_points
-from crop import autocrop_image
-from external_contours import external_contours
-from rectangle import external_rectangle
-from screw_text import screw_text
+# from rotate import auto_rotate
+# from extreme_points import extreme_points
+# from crop import autocrop_image
+# from external_contours import external_contours
+# from rectangle import external_rectangle
+# from screw_text import screw_text
 from auto_adjust import auto_adjust
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
