@@ -1,6 +1,6 @@
 opencv-python
-streamlit=1.15.2
-Pillow=9.3.0
-scipy=1.9.3
-imutils=0.5.4
-numpy=1.23.5
+streamlit
+Pillow
+scipy
+imutils
+numpy
