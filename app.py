@@ -88,7 +88,7 @@ def main_loop():
 
     if chk_auto_adjust:
         processing_count += 1
-        processed_image, final_image = auto_adjust(
+        processed_image, final_image, median_angle = auto_adjust(
             processed_image,
             chk_use_threshold,
             threshold,
@@ -96,6 +96,7 @@ def main_loop():
             near_margin_top,
             near_margin_right,
             near_margin_bottom,
+            auto_rotate=True,
             crop=True,
             record_process=True)
         st.text(f"{processing_count}) Auto-ajuste")
@@ -132,6 +133,7 @@ def main_loop():
 
     if chk_processed_image:
         st.subheader("Imagem Processada")
+        st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
         st.image([processed_image])
 
     st.subheader("Resultado Final")
