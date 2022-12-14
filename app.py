@@ -7,8 +7,8 @@ import numpy as np
 # from external_contours import external_contours
 # from rectangle import external_rectangle
 # from screw_text import screw_text
-# from auto_adjust import auto_adjust
-import cv2 as cv
+from auto_adjust import auto_adjust
+
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
@@ -131,33 +131,33 @@ def main_loop():
     #     st.text(f"{processing_count}) Contorno Externo")
     #     processed_image = external_contours(processed_image)
 
-    # if chk_auto_adjust:
-    #     processing_count += 1
-    #     final_image, median_angle, rotated_image, processed_image = auto_adjust(
-    #         processed_image,
-    #         chk_use_threshold,
-    #         threshold,
-    #         near_margin_left,
-    #         near_margin_top,
-    #         near_margin_right,
-    #         near_margin_bottom,
-    #         auto_rotate=True,
-    #         crop=True,
-    #         record_process=True)
-    #     # st.text(f"{processing_count}) Auto-ajuste")
+    if chk_auto_adjust:
+        processing_count += 1
+        final_image, median_angle, rotated_image, processed_image = auto_adjust(
+            processed_image,
+            chk_use_threshold,
+            threshold,
+            near_margin_left,
+            near_margin_top,
+            near_margin_right,
+            near_margin_bottom,
+            auto_rotate=True,
+            crop=True,
+            record_process=True)
+        # st.text(f"{processing_count}) Auto-ajuste")
 
     if chk_processed_image:
         st.subheader("Imagem Processada")
         st.image([processed_image])
 
-    # if chk_rotated_image:
-    #     st.subheader("Parâmetros Auto-Rotação")
-    #     if median_angle != 0:
-    #         st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
-    #         # st.image([rotated_image], width=400)
-    #         st.image([rotated_image])
-    #     else:
-    #         st.text(f"Auto-rotação: não realizada")
+    if chk_rotated_image:
+        st.subheader("Parâmetros Auto-Rotação")
+        if median_angle != 0:
+            st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
+            # st.image([rotated_image], width=400)
+            st.image([rotated_image])
+        else:
+            st.text(f"Auto-rotação: não realizada")
 
     st.subheader("Resultado Final")
     st.image([final_image])
