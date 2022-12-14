@@ -3,16 +3,20 @@ import cv2
 import os
 
 
-def write_frame(img, aditional="", contours=None):
+def write_frame(img, aditional="", contours=None, rect=None):
     if not record:
         return
 
     global frame
     frame += 1
     if contours:
-        # print('contours', contours)
         img = img.copy()
         cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+
+    if rect:
+        img = img.copy()
+        cv2.rectangle(img, (rect[0], rect[1]),
+                      (rect[2], rect[3]), (255, 255, 0), 3)
 
     cv2.imwrite('frames/frame_{:02d}{}.png'.format(frame, aditional), img)
 
@@ -20,6 +24,7 @@ def write_frame(img, aditional="", contours=None):
 def get_size(img):
     """Return the size of the image in pixels."""
     ih, iw = img.shape[:2]
+    print("Size", ih, iw, iw * ih)
     return iw * ih
 
 
@@ -27,7 +32,7 @@ def near_edge(img, contour):
     """Check if a contour is near the edge in the given image."""
     x, y, w, h = cv2.boundingRect(contour)
     ih, iw = img.shape[:2]
-    mm = 2  # margin in pixels
+    mm = 5  # margin in pixels
     return (x < mm
             or x + w > iw - mm
             or y < mm
@@ -37,18 +42,50 @@ def near_edge(img, contour):
 def contourOK(img, cc):
     """Check if the contour is a good predictor of photo location."""
     if near_edge(img, cc):
-        # print("near_edge")
         return False  # shouldn't be near edges
     x, y, w, h = cv2.boundingRect(cc)
-    if w < 100 or h < 100:
-        # print("too narrow", w, h)
-        return False  # too narrow or wide is bad
+
+    # if w < 100 or h < 100:
+    #     return False  # too narrow or wide is bad
+
     area = cv2.contourArea(cc)
-    if area > (get_size(img) * 0.3):
+    # if area > (get_size(img) * 0.3):
+    #     return False
+    # if area < 200:
+    #     return False
+
+    if area > (get_size(img) * 0.9):
         return False
-    if area < 200:
-        return False
+
     return True
+
+
+def get_boundaries(img, contours):
+    """Find the boundaries of the photo in the image using contours."""
+    # margin is the minimum distance from the edges of the image, as a fraction
+    ih, iw = img.shape[:2]
+    minx = iw
+    miny = ih
+    maxx = 0
+    maxy = 0
+
+    for cc in contours:
+        x, y, w, h = cv2.boundingRect(cc)
+        if x < minx:
+            minx = x
+        if y < miny:
+            miny = y
+        if x + w > maxx:
+            maxx = x + w
+        if y + h > maxy:
+            maxy = y + h
+
+    # print("get_boundaries", frame, minx, miny, maxx, maxy)
+    # rect = (minx, miny, maxx, maxy),
+    write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
+        minx, miny, maxx, maxy), rect=(minx, miny, maxx, maxy))
+
+    return (minx, miny, maxx, maxy)
 
 
 def auto_adjust(img, use_threshold=True, threshold=200, record_process=True):
@@ -86,7 +123,12 @@ def auto_adjust(img, use_threshold=True, threshold=200, record_process=True):
     write_frame(img, '_contours', contours=contours)
 
     # filter contours that are too large or small
-    # contours = [cc for cc in contours if contourOK(img, cc)]
-    # write_frame(img, '_filterContours', contours=contours)
+    contours = [cc for cc in contours if contourOK(img, cc)]
+    # if (contours is None):
+    print('** NO CONTOUR AFTER FILTER', len(contours))
+
+    write_frame(img, '_filterContours', contours=contours)
+
+    bounds = get_boundaries(img, contours)
 
     return thresh
