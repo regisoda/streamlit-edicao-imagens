@@ -31,21 +31,63 @@ def get_size(img):
     return iw * ih
 
 
-def near_edge(img, contour, mm=0):
+def near_edge(img, contour,
+              near_margin_left,
+              near_margin_top,
+              near_margin_right,
+              near_margin_bottom,
+              mm):
     """Check if a contour is near the edge in the given image."""
     x, y, w, h = cv2.boundingRect(contour)
     ih, iw = img.shape[:2]
-    # mm = 10  # margin in pixels
-    print('margin', mm)
+
+    # print('NEAR', near_margin_left, near_margin_top,
+    #       near_margin_right, near_margin_bottom, mm)
+    # print('--', x, y, h, w)
+    # print('y + h', y + h)
+    # print('ih iw', ih, iw)
+
+    if (near_margin_left > 0):
+        if (x <= near_margin_left):
+            print('near left', y, near_margin_left)
+            return True
+
+    if (near_margin_top > 0):
+        if (y <= near_margin_top):
+            print('near top', y, near_margin_top)
+            return True
+
+    if (near_margin_right > 0):
+        if (x + w >= iw - near_margin_right):
+            print('near right', x + w, iw - near_margin_right)
+            return True
+
+    if (near_margin_bottom > 0):
+        if (y + h >= ih - near_margin_bottom):
+            print('near bottom', y + h, ih - near_margin_bottom)
+            return True
+
     return (x < mm
             or x + w > iw - mm
             or y < mm
             or y + h > ih - mm)
 
 
-def contourOK(img, cc, mm):
+def contourOK(img, cc,
+              near_margin_left,
+              near_margin_top,
+              near_margin_right,
+              near_margin_bottom):
     """Check if the contour is a good predictor of photo location."""
-    if near_edge(img, cc, mm):
+    if near_edge(
+            img,
+            cc,
+            near_margin_left,
+            near_margin_top,
+            near_margin_right,
+            near_margin_bottom,
+            mm=5):
+        print('near_edge')
         return False  # shouldn't be near edges
     x, y, w, h = cv2.boundingRect(cc)
 
@@ -93,7 +135,14 @@ def get_boundaries(img, contours):
     return img1
 
 
-def auto_adjust(img, use_threshold=True, threshold=200, near_margin=0, record_process=True):
+def auto_adjust(img,
+                use_threshold=True,
+                threshold=200,
+                near_margin_left=0,
+                near_margin_top=0,
+                near_margin_right=0,
+                near_margin_bottom=0,
+                record_process=True):
 
     global record
     global frame
@@ -134,7 +183,15 @@ def auto_adjust(img, use_threshold=True, threshold=200, near_margin=0, record_pr
     write_frame(img, '_contours', contours=contours)
 
     # filter contours that are too large or small
-    contours = [cc for cc in contours if contourOK(img, cc, near_margin)]
+    contours = [cc for cc in contours
+                if contourOK(
+                    img,
+                    cc,
+                    near_margin_left,
+                    near_margin_top,
+                    near_margin_right,
+                    near_margin_bottom)
+                ]
     write_frame(img, '_filterContours', contours=contours)
 
     bounds = get_boundaries(img, contours)

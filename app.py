@@ -33,11 +33,23 @@ def main_loop():
         threshold = 0
 
     chk_use_margin = st.sidebar.checkbox(
-        'Desconsiderar ruídos próximos das margens', True)
+        'Configurar ruídos próximos das margens', True)
     if (chk_use_margin):
-        near_margin = st.sidebar.slider('Qtde de Pixels', 0, 50, 5)
+        st.sidebar.write("Desconsiderar:")
+        near_margin_left = st.sidebar.slider(
+            'Qtde de Pixels (Esquerda)', 0, 150, 10)
+        near_margin_top = st.sidebar.slider(
+            'Qtde de Pixels (Superior)', 0, 150, 10)
+        near_margin_right = st.sidebar.slider(
+            'Qtde de Pixels (Direita)', 0, 150, 10)
+        near_margin_bottom = st.sidebar.slider(
+            'Qtde de Pixels (Inferior)', 0, 150, 10)
+
     else:
-        near_margin = 0
+        near_margin_left = 0
+        near_margin_top = 0
+        near_margin_right = 0
+        near_margin_bottom = 0
 
     st.sidebar.write("")
 
@@ -71,7 +83,14 @@ def main_loop():
     if chk_auto_adjust:
         processing_count += 1
         processed_image = auto_adjust(
-            processed_image, chk_use_threshold, threshold, near_margin, True)
+            processed_image,
+            chk_use_threshold,
+            threshold,
+            near_margin_left,
+            near_margin_top,
+            near_margin_right,
+            near_margin_bottom,
+            record_process=True)
         st.text(f"{processing_count}) Auto-ajuste")
 
     if chk_auto_rotate:
