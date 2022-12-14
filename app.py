@@ -25,44 +25,50 @@ def main_loop():
     # st.header("Simular edições de imagens")
     # st.subheader("Imagem")
 
-    chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
-    if (chk_use_threshold):
-        threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
-        st.write("Threshold:", threshold)
-    else:
-        threshold = 0
-
-    chk_use_margin = st.sidebar.checkbox(
-        'Configurar ruídos próximos das margens', True)
-    if (chk_use_margin):
-        st.sidebar.write("Desconsiderar:")
-        near_margin_left = st.sidebar.slider(
-            'Qtde de Pixels (Esquerda)', 0, 150, 10)
-        near_margin_top = st.sidebar.slider(
-            'Qtde de Pixels (Superior)', 0, 150, 10)
-        near_margin_right = st.sidebar.slider(
-            'Qtde de Pixels (Direita)', 0, 150, 10)
-        near_margin_bottom = st.sidebar.slider(
-            'Qtde de Pixels (Inferior)', 0, 150, 10)
-
-    else:
-        near_margin_left = 0
-        near_margin_top = 0
-        near_margin_right = 0
-        near_margin_bottom = 0
-
-    st.sidebar.write("")
-
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
-    chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
-    chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
-    chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
-    chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
-    chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
-    chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
-    chk_external_contour = st.sidebar.checkbox('Contornos Externos')
+    chk_processed_image = st.sidebar.checkbox('Exibir Imagem Processada', True)
 
+    chk_auto_adjust = True
+    # chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
+    # chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
+    # chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
+    # chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
+    # chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
+    # chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
+    # chk_external_contour = st.sidebar.checkbox('Contornos Externos')
+
+    # st.sidebar.write("")
+    # st.sidebar.write("")
+    # st.sidebar.text("Ajustes manuais:")
+
+    chk_use_threshold = False
+    threshold = 0
+    near_margin_left = 0
+    near_margin_top = 0
+    near_margin_right = 0
+    near_margin_bottom = 0
+
+    # chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
+    # if (chk_use_threshold):
+    #     threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
+    #     st.write("Threshold:", threshold)
+
+    # chk_use_margin = st.sidebar.checkbox(
+    #     'Configurar ruídos próximos das margens', True)
+    # if (chk_use_margin):
+    #     st.sidebar.write("Desconsiderar:")
+    #     near_margin_left = st.sidebar.slider(
+    #         'Qtde de Pixels (Esquerda)', 0, 150, 10)
+    #     near_margin_top = st.sidebar.slider(
+    #         'Qtde de Pixels (Superior)', 0, 150, 10)
+    #     near_margin_right = st.sidebar.slider(
+    #         'Qtde de Pixels (Direita)', 0, 150, 10)
+    #     near_margin_bottom = st.sidebar.slider(
+    #         'Qtde de Pixels (Inferior)', 0, 150, 10)
+
+    # ------------------------------------------ #
+    # ------------------------------------------ #
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
     if not image_file:
@@ -75,14 +81,14 @@ def main_loop():
         st.subheader("Imagem Original")
         st.image([original_image])
 
-    st.subheader("Imagem Processada")
     processed_image = original_image
+    final_image = original_image
 
     processing_count = 0
 
     if chk_auto_adjust:
         processing_count += 1
-        processed_image = auto_adjust(
+        processed_image, final_image = auto_adjust(
             processed_image,
             chk_use_threshold,
             threshold,
@@ -90,40 +96,46 @@ def main_loop():
             near_margin_top,
             near_margin_right,
             near_margin_bottom,
+            crop=True,
             record_process=True)
         st.text(f"{processing_count}) Auto-ajuste")
 
-    if chk_auto_rotate:
-        processing_count += 1
-        processed_image, angle = auto_rotate(processed_image, False)
-        st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
+    # if chk_auto_rotate:
+    #     processing_count += 1
+    #     processed_image, angle = auto_rotate(processed_image, False)
+    #     st.text(f"{processing_count}) Auto-rotação - ângulo: {angle:.04f}")
 
-    if chk_auto_rotate_text:
-        processing_count += 1
-        processed_image, angle = screw_text(processed_image, True)
-        st.text(f"{processing_count}) Auto-rotação - texto: {angle:.04f}")
+    # if chk_auto_rotate_text:
+    #     processing_count += 1
+    #     processed_image, angle = screw_text(processed_image, True)
+    #     st.text(f"{processing_count}) Auto-rotação - texto: {angle:.04f}")
 
-    if chk_extreme_points:
-        processing_count += 1
-        st.text(f"{processing_count}) Pontos extremos")
-        processed_image = extreme_points(processed_image)
+    # if chk_extreme_points:
+    #     processing_count += 1
+    #     st.text(f"{processing_count}) Pontos extremos")
+    #     processed_image = extreme_points(processed_image)
 
-    if chk_auto_crop:
-        processing_count += 1
-        st.text(f"{processing_count}) Auto-recorte")
-        processed_image = autocrop_image(processed_image, True)
+    # if chk_auto_crop:
+    #     processing_count += 1
+    #     st.text(f"{processing_count}) Auto-recorte")
+    #     processed_image = autocrop_image(processed_image, True)
 
-    if chk_external_rectangle:
-        processing_count += 1
-        st.text(f"{processing_count}) Retângulo Externo")
-        processed_image = external_rectangle(processed_image)
+    # if chk_external_rectangle:
+    #     processing_count += 1
+    #     st.text(f"{processing_count}) Retângulo Externo")
+    #     processed_image = external_rectangle(processed_image)
 
-    if chk_external_contour:
-        processing_count += 1
-        st.text(f"{processing_count}) Contorno Externo")
-        processed_image = external_contours(processed_image)
+    # if chk_external_contour:
+    #     processing_count += 1
+    #     st.text(f"{processing_count}) Contorno Externo")
+    #     processed_image = external_contours(processed_image)
 
-    st.image([processed_image])
+    if chk_processed_image:
+        st.subheader("Imagem Processada")
+        st.image([processed_image])
+
+    st.subheader("Resultado Final")
+    st.image([final_image])
 
 
 if __name__ == '__main__':

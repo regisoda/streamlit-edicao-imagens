@@ -87,8 +87,9 @@ def contourOK(img, cc,
             near_margin_right,
             near_margin_bottom,
             mm=5):
-        print('near_edge')
+        # print('near_edge')
         return False  # shouldn't be near edges
+
     x, y, w, h = cv2.boundingRect(cc)
 
     # if w < 100 or h < 100:
@@ -128,11 +129,21 @@ def get_boundaries(img, contours):
 
     # print("get_boundaries", frame, minx, miny, maxx, maxy)
     # rect = (minx, miny, maxx, maxy),
-    img1 = write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
+    imgBoundary = write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
         minx, miny, maxx, maxy), rect=(minx, miny, maxx, maxy))
 
-    # return (minx, miny, maxx, maxy)
-    return img1
+    return (imgBoundary, (minx, miny, maxx, maxy))
+
+
+def crop_image(img, boundaries, space=0):
+    """Crop the image to the given boundaries."""
+    minx, miny, maxx, maxy = boundaries
+    if (maxx == 0 or maxy == 0):
+        print("not crop - original")
+        return img
+
+    # print("crop", minx, miny, maxx, maxy)
+    return img[miny-space:maxy+space, minx-space:maxx+space]
 
 
 def auto_adjust(img,
@@ -142,6 +153,7 @@ def auto_adjust(img,
                 near_margin_top=0,
                 near_margin_right=0,
                 near_margin_bottom=0,
+                crop=True,
                 record_process=True):
 
     global record
@@ -194,8 +206,13 @@ def auto_adjust(img,
                 ]
     write_frame(img, '_filterContours', contours=contours)
 
-    bounds = get_boundaries(img, contours)
+    processed, bounds = get_boundaries(img, contours)
 
-    write_frame(bounds, '_final')
+    if crop:
+        cropped = crop_image(img, bounds)
+    else:
+        cropped = processed
 
-    return bounds
+    write_frame(cropped, '_final')
+
+    return (processed, cropped)
