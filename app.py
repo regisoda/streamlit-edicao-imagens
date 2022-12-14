@@ -20,14 +20,26 @@ def load_image(image_file):
 
 def main_loop():
 
-    st.title('Pattero - Tratamento de Imagens')
-
-    # st.header("Simular edições de imagens")
-    # st.subheader("Imagem")
+    # https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
 
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
     chk_processed_image = st.sidebar.checkbox('Exibir Imagem Processada', True)
+    chk_rotated_image = st.sidebar.checkbox(
+        'Exibir Parâmetros Auto-Rotação', True)
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.text("")
+    st.sidebar.markdown(":facepunch: Desenvolvido por Régis Oda :copyright:")
 
     chk_auto_adjust = True
     # chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
@@ -69,6 +81,9 @@ def main_loop():
 
     # ------------------------------------------ #
     # ------------------------------------------ #
+    st.title('Pattero - Tratamento de Imagens')
+    # st.caption('v0.1')
+
     image_file = st.file_uploader(
         "Carregar Imagem", type=["png", "jpg", "jpeg"])
     if not image_file:
@@ -85,21 +100,6 @@ def main_loop():
     final_image = original_image
 
     processing_count = 0
-
-    if chk_auto_adjust:
-        processing_count += 1
-        processed_image, final_image, median_angle = auto_adjust(
-            processed_image,
-            chk_use_threshold,
-            threshold,
-            near_margin_left,
-            near_margin_top,
-            near_margin_right,
-            near_margin_bottom,
-            auto_rotate=True,
-            crop=True,
-            record_process=True)
-        st.text(f"{processing_count}) Auto-ajuste")
 
     # if chk_auto_rotate:
     #     processing_count += 1
@@ -131,10 +131,33 @@ def main_loop():
     #     st.text(f"{processing_count}) Contorno Externo")
     #     processed_image = external_contours(processed_image)
 
+    if chk_auto_adjust:
+        processing_count += 1
+        final_image, median_angle, rotated_image, processed_image = auto_adjust(
+            processed_image,
+            chk_use_threshold,
+            threshold,
+            near_margin_left,
+            near_margin_top,
+            near_margin_right,
+            near_margin_bottom,
+            auto_rotate=True,
+            crop=True,
+            record_process=True)
+        # st.text(f"{processing_count}) Auto-ajuste")
+
     if chk_processed_image:
         st.subheader("Imagem Processada")
-        st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
         st.image([processed_image])
+
+    if chk_rotated_image:
+        st.subheader("Parâmetros Auto-Rotação")
+        if median_angle != 0:
+            st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
+            # st.image([rotated_image], width=400)
+            st.image([rotated_image])
+        else:
+            st.text(f"Auto-rotação: não realizada")
 
     st.subheader("Resultado Final")
     st.image([final_image])

@@ -139,8 +139,8 @@ def get_boundaries(img, contours):
 def auto_rotate_image(img, draw_lines=True):
     write_frame(img, '_rotate_before')
 
-    img_temp = img.copy()
-    img_gray = cv2.cvtColor(img_temp, cv2.COLOR_BGR2GRAY)
+    image_rotated_lines = img.copy()
+    img_gray = cv2.cvtColor(image_rotated_lines, cv2.COLOR_BGR2GRAY)
     write_frame(img_gray, '_rotate_gray')
     img_edges = cv2.Canny(img_gray, 100, 200, apertureSize=3)
     # img_edges = cv2.Canny(img_gray, 150, 200)
@@ -149,23 +149,25 @@ def auto_rotate_image(img, draw_lines=True):
                             minLineLength=200, maxLineGap=5)
     angles = []
     median_angle = 0
-    img_rotated = img
+    image_result = img
 
     if lines is not None:
         for [[x1, y1, x2, y2]] in lines:
             print('lines', (x1, y1), (x2, y2))
-            valid_lines = (y1 - y2 > 0 and y1 - y2 <
-                           10) or (y2 - y1 > 0 and y2 - y1 < 10)
+            valid_lines = (y1 - y2 >= 0 and y1 - y2 <
+                           10) or (y2 - y1 >= 0 and y2 - y1 < 10)
             if (valid_lines):
                 print('lines *', (x1, y1), (x2, y2))
                 if (draw_lines):
-                    cv2.line(img_temp, (x1, y1), (x2, y2), (255, 255, 0), 20)
+                    cv2.line(image_rotated_lines, (x1, y1),
+                             (x2, y2), (255, 255, 0), 20)
 
                 angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
                 angles.append(angle)
             else:
                 if (draw_lines):
-                    cv2.line(img_temp, (x1, y1), (x2, y2), (0, 255, 255), 2)
+                    cv2.line(image_rotated_lines, (x1, y1),
+                             (x2, y2), (0, 255, 255), 2)
 
         if len(angles) > 1:
             median_angle = np.median(angles)
@@ -175,15 +177,15 @@ def auto_rotate_image(img, draw_lines=True):
     else:
         print('No detected lines')
 
-    write_frame(img_temp, '_rotate_lines')
+    write_frame(image_rotated_lines, '_rotate_lines')
 
     if median_angle != 0:
-        img_rotated = ndimage.rotate(img, median_angle)
-        write_frame(img_rotated, '_rotate_after')
+        image_result = ndimage.rotate(img, median_angle)
+        write_frame(image_result, '_rotate_after')
     else:
-        write_frame(img_rotated, '_rotate_after_no')
+        write_frame(image_result, '_rotate_after_no')
 
-    return (img_rotated, median_angle)
+    return (image_result, median_angle, image_rotated_lines)
 
 
 def crop_image(img, boundaries, space=0):
@@ -213,7 +215,7 @@ def auto_adjust(img,
 
     record = record_process
     frame = 0
-    processed = img.copy()
+    processed_image = img.copy()
 
     if record:
         os.makedirs('frames', exist_ok=True)
@@ -223,12 +225,15 @@ def auto_adjust(img,
 
     write_frame(img, '_original')
 
-    median_angle = 0
     if auto_rotate:
-        processed, median_angle = auto_rotate_image(processed)
+        processed_image, median_angle, image_rotated_result = auto_rotate_image(
+            processed_image)
+    else:
+        median_angle = 0
+        image_rotated_result = img.copy()
 
     # apply COLOR_BGR2GRAY
-    gray_image = cv2.cvtColor(processed, cv2.COLOR_BGR2GRAY)
+    gray_image = cv2.cvtColor(processed_image, cv2.COLOR_BGR2GRAY)
     write_frame(gray_image, '_gray')
 
     # gray = cv2.bitwise_not(gray)
@@ -236,40 +241,38 @@ def auto_adjust(img,
     #     gray, threshold, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
     # apply threshold
+    thresh_image = processed_image
     if use_threshold:
-        thresh = cv2.threshold(gray_image, threshold, 255, 0)[1]
-        write_frame(thresh, '_tresh_{:02d}'.format(threshold))
-    else:
-        thresh = processed
+        thresh_image = cv2.threshold(gray_image, threshold, 255, 0)[1]
+        write_frame(thresh_image, '_tresh_{:02d}'.format(threshold))
 
     # apply canny
-    edges = cv2.Canny(thresh, 150, 200)
-    write_frame(edges, '_edges')
+    edges_image = cv2.Canny(thresh_image, 150, 200)
+    write_frame(edges_image, '_edges')
 
     # find contours
     contours, hierarchy = cv2.findContours(
-        edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    write_frame(processed, '_contours', contours=contours)
+        edges_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    write_frame(processed_image, '_contours', contours=contours)
 
     # filter contours that are too large or small
     contours = [cc for cc in contours
                 if contourOK(
-                    processed,
+                    processed_image,
                     cc,
                     near_margin_left,
                     near_margin_top,
                     near_margin_right,
                     near_margin_bottom)
                 ]
-    write_frame(processed, '_filterContours', contours=contours)
+    write_frame(processed_image, '_filterContours', contours=contours)
 
-    image_boundary, bounds = get_boundaries(processed, contours)
+    image_processed_result, bounds = get_boundaries(processed_image, contours)
 
+    image_result = processed_image
     if crop:
-        cropped = crop_image(processed, bounds)
-    else:
-        cropped = processed
+        image_result = crop_image(processed_image, bounds)
 
-    write_frame(cropped, '_final')
+    write_frame(image_result, '_final')
 
-    return (image_boundary, cropped, median_angle)
+    return (image_result, median_angle, image_rotated_result, image_processed_result)
