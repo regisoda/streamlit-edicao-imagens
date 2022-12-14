@@ -20,14 +20,17 @@ def load_image(image_file):
 
 def main_loop():
 
-    st.title('Tratamento de Imagens')
+    st.title('Pattero - Tratamento de Imagens')
 
     # st.header("Simular edições de imagens")
     # st.subheader("Imagem")
 
     chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
-    threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
-    st.write("Threshold:", threshold)
+    if (chk_use_threshold):
+        threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
+        st.write("Threshold:", threshold)
+    else:
+        threshold = 0
 
     st.sidebar.write("")
 

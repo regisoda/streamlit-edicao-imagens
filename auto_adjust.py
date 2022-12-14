@@ -9,6 +9,7 @@ def write_frame(img, aditional="", contours=None, rect=None):
 
     global frame
     frame += 1
+    imgTmp = img.copy()
     if contours:
         img = img.copy()
         cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
@@ -19,6 +20,7 @@ def write_frame(img, aditional="", contours=None, rect=None):
                       (rect[2], rect[3]), (255, 255, 0), 3)
 
     cv2.imwrite('frames/frame_{:02d}{}.png'.format(frame, aditional), img)
+    return img
 
 
 def get_size(img):
@@ -82,10 +84,11 @@ def get_boundaries(img, contours):
 
     # print("get_boundaries", frame, minx, miny, maxx, maxy)
     # rect = (minx, miny, maxx, maxy),
-    write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
+    img1 = write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
         minx, miny, maxx, maxy), rect=(minx, miny, maxx, maxy))
 
-    return (minx, miny, maxx, maxy)
+    # return (minx, miny, maxx, maxy)
+    return img1
 
 
 def auto_adjust(img, use_threshold=True, threshold=200, record_process=True):
@@ -104,31 +107,34 @@ def auto_adjust(img, use_threshold=True, threshold=200, record_process=True):
 
     write_frame(img, '_original')
 
+    # apply COLOR_BGR2GRAY
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    write_frame(gray, '_gray')
+
     # gray = cv2.bitwise_not(gray)
     # thresh = cv2.threshold(
     #     gray, threshold, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
+    # apply threshold
     if use_threshold:
         thresh = cv2.threshold(gray, threshold, 255, 0)[1]
         write_frame(thresh, '_tresh_{:02d}'.format(threshold))
     else:
         thresh = img
-    # contours, hierarchy = cv2.findContours(thresh, 1, 2)
 
+    # apply canny
     edges = cv2.Canny(thresh, 150, 200)
     write_frame(edges, '_edges')
+
+    # find contours
     contours, hierarchy = cv2.findContours(
         edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     write_frame(img, '_contours', contours=contours)
 
     # filter contours that are too large or small
     contours = [cc for cc in contours if contourOK(img, cc)]
-    # if (contours is None):
-    print('** NO CONTOUR AFTER FILTER', len(contours))
-
     write_frame(img, '_filterContours', contours=contours)
 
     bounds = get_boundaries(img, contours)
 
-    return thresh
+    return bounds
