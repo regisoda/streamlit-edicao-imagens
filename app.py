@@ -8,7 +8,7 @@ import numpy as np
 # from rectangle import external_rectangle
 # from screw_text import screw_text
 # from auto_adjust import auto_adjust
-import cv2
+import cv2 as cv
 
 # https://blog.loginradius.com/engineering/guest-post/opencv-web-app-with-streamlit/
 
