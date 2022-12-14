@@ -25,9 +25,11 @@ def main_loop():
     # st.header("Simular edições de imagens")
     # st.subheader("Imagem")
 
+    chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
     threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
-
     st.write("Threshold:", threshold)
+
+    st.sidebar.write("")
 
     st.sidebar.text("Opções:")
     chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
@@ -58,7 +60,8 @@ def main_loop():
 
     if chk_auto_adjust:
         processing_count += 1
-        processed_image = auto_adjust(processed_image, threshold, True)
+        processed_image = auto_adjust(
+            processed_image, chk_use_threshold, threshold, True)
         st.text(f"{processing_count}) Auto-ajuste")
 
     if chk_auto_rotate:
