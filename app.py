@@ -23,10 +23,11 @@ def main_loop():
     # https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
 
     st.sidebar.text("Opções:")
-    chk_original_image = st.sidebar.checkbox('Exibir Imagem Original')
-    chk_processed_image = st.sidebar.checkbox('Exibir Imagem Processada', True)
+    chk_original_image = st.sidebar.checkbox('Exibir Imagem Original', True)
+    chk_processed_image = st.sidebar.checkbox(
+        'Exibir Imagem Processada', False)
     chk_rotated_image = st.sidebar.checkbox(
-        'Exibir Parâmetros Auto-Rotação', True)
+        'Exibir Parâmetros Auto-Rotação', False)
     st.sidebar.text("")
     st.sidebar.text("")
     st.sidebar.text("")
@@ -39,7 +40,8 @@ def main_loop():
     st.sidebar.text("")
     st.sidebar.text("")
     st.sidebar.text("")
-    st.sidebar.markdown(":facepunch: Desenvolvido por Régis Oda :copyright:")
+    st.sidebar.markdown(
+        ":facepunch: Desenvolvido por Régis Oda :copyright: - v0.1")
 
     chk_auto_adjust = True
     # chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)

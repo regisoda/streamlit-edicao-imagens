@@ -146,7 +146,7 @@ def auto_rotate_image(img, draw_lines=True):
     # img_edges = cv2.Canny(img_gray, 150, 200)
     write_frame(img_edges, '_rotate_edges')
     lines = cv2.HoughLinesP(img_edges, 1, math.pi / 180.0, 100,
-                            minLineLength=200, maxLineGap=5)
+                            minLineLength=150, maxLineGap=5)
     angles = []
     median_angle = 0
     image_result = img
