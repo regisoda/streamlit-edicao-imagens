@@ -23,11 +23,56 @@ def main_loop():
     # https://streamlit-emoji-shortcodes-streamlit-app-gwckff.streamlit.app/
 
     st.sidebar.text("Opções:")
-    chk_original_image = st.sidebar.checkbox('Exibir Imagem Original', True)
+    chk_original_image = st.sidebar.checkbox('Exibir Imagem Original', False)
     chk_processed_image = st.sidebar.checkbox(
-        'Exibir Imagem Processada', False)
-    chk_rotated_image = st.sidebar.checkbox(
-        'Exibir Parâmetros Auto-Rotação', False)
+        'Exibir Imagem Processada', True)
+    # chk_show_rotated_image = st.sidebar.checkbox(
+    #     'Exibir Parâmetros Auto-Rotação', False)
+
+    chk_auto_adjust = True
+    # chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
+    # chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
+    # chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
+    # chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
+    # chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
+    # chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
+    # chk_external_contour = st.sidebar.checkbox('Contornos Externos')
+
+    st.sidebar.write("")
+    st.sidebar.write("")
+    st.sidebar.text("Ajustes manuais:")
+
+    chk_use_threshold = False
+    threshold = 0
+    near_margin_left = 0
+    near_margin_top = 0
+    near_margin_right = 0
+    near_margin_bottom = 0
+
+    # chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
+    # if (chk_use_threshold):
+    #     threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
+    #     st.write("Threshold:", threshold)
+
+    chk_auto_adjust_rotate = st.sidebar.checkbox(
+        'Auto-rotação', False)
+    chk_show_rotated_image = chk_auto_adjust_rotate
+
+    chk_use_margin = st.sidebar.checkbox(
+        'Configurar ruídos próximos das margens', False)
+    if (chk_use_margin):
+        st.sidebar.write("Desconsiderar:")
+        near_margin_left = st.sidebar.slider(
+            'Qtde de Pixels (Esquerda)', 0, 150, 0)
+        near_margin_top = st.sidebar.slider(
+            'Qtde de Pixels (Superior)', 0, 150, 0)
+        near_margin_right = st.sidebar.slider(
+            'Qtde de Pixels (Direita)', 0, 150, 0)
+        near_margin_bottom = st.sidebar.slider(
+            'Qtde de Pixels (Inferior)', 0, 150, 0)
+
+    # ------------------------------------------ #
+    # ------------------------------------------ #
     st.sidebar.text("")
     st.sidebar.text("")
     st.sidebar.text("")
@@ -42,44 +87,6 @@ def main_loop():
     st.sidebar.text("")
     st.sidebar.markdown(
         ":facepunch: Desenvolvido por Régis Oda :copyright: - v0.1")
-
-    chk_auto_adjust = True
-    # chk_auto_adjust = st.sidebar.checkbox('Auto-ajuste', True)
-    # chk_auto_rotate = st.sidebar.checkbox('Auto-rotação')
-    # chk_auto_rotate_text = st.sidebar.checkbox('Auto-rotação Texto')
-    # chk_extreme_points = st.sidebar.checkbox('Pontos Extremos')
-    # chk_auto_crop = st.sidebar.checkbox('Auto-recorte')
-    # chk_external_rectangle = st.sidebar.checkbox('Retângulo Externo')
-    # chk_external_contour = st.sidebar.checkbox('Contornos Externos')
-
-    # st.sidebar.write("")
-    # st.sidebar.write("")
-    # st.sidebar.text("Ajustes manuais:")
-
-    chk_use_threshold = False
-    threshold = 0
-    near_margin_left = 0
-    near_margin_top = 0
-    near_margin_right = 0
-    near_margin_bottom = 0
-
-    # chk_use_threshold = st.sidebar.checkbox('Usar Threshold')
-    # if (chk_use_threshold):
-    #     threshold = st.sidebar.slider('Ajuste (Threshold)', 100, 250, 200)
-    #     st.write("Threshold:", threshold)
-
-    # chk_use_margin = st.sidebar.checkbox(
-    #     'Configurar ruídos próximos das margens', True)
-    # if (chk_use_margin):
-    #     st.sidebar.write("Desconsiderar:")
-    #     near_margin_left = st.sidebar.slider(
-    #         'Qtde de Pixels (Esquerda)', 0, 150, 10)
-    #     near_margin_top = st.sidebar.slider(
-    #         'Qtde de Pixels (Superior)', 0, 150, 10)
-    #     near_margin_right = st.sidebar.slider(
-    #         'Qtde de Pixels (Direita)', 0, 150, 10)
-    #     near_margin_bottom = st.sidebar.slider(
-    #         'Qtde de Pixels (Inferior)', 0, 150, 10)
 
     # ------------------------------------------ #
     # ------------------------------------------ #
@@ -143,7 +150,7 @@ def main_loop():
             near_margin_top,
             near_margin_right,
             near_margin_bottom,
-            auto_rotate=True,
+            auto_rotate=chk_auto_adjust_rotate,
             crop=True,
             record_process=True)
         # st.text(f"{processing_count}) Auto-ajuste")
@@ -152,12 +159,12 @@ def main_loop():
         st.subheader("Imagem Processada")
         st.image([processed_image])
 
-    if chk_rotated_image:
-        st.subheader("Parâmetros Auto-Rotação")
+    if chk_show_rotated_image:
+        # st.subheader("Parâmetros Auto-Rotação")
         if median_angle != 0:
             st.text(f"Auto-rotação - ângulo: {median_angle:.04f}")
             # st.image([rotated_image], width=400)
-            st.image([rotated_image])
+            # st.image([rotated_image])
         else:
             st.text(f"Auto-rotação: não realizada")
 

@@ -155,7 +155,7 @@ def auto_rotate_image(img, draw_lines=True):
         for [[x1, y1, x2, y2]] in lines:
             print('lines', (x1, y1), (x2, y2))
             valid_lines = (y1 - y2 >= 0 and y1 - y2 <
-                           10) or (y2 - y1 >= 0 and y2 - y1 < 10)
+                           20) or (y2 - y1 >= 0 and y2 - y1 < 20)
             if (valid_lines):
                 print('lines *', (x1, y1), (x2, y2))
                 if (draw_lines):
@@ -225,12 +225,12 @@ def auto_adjust(img,
 
     write_frame(img, '_original')
 
-    if auto_rotate:
-        processed_image, median_angle, image_rotated_result = auto_rotate_image(
-            processed_image)
-    else:
-        median_angle = 0
-        image_rotated_result = img.copy()
+    # if auto_rotate:
+    #     processed_image, median_angle, image_rotated_result = auto_rotate_image(
+    #         processed_image)
+    # else:
+    #     median_angle = 0
+    #     image_rotated_result = img.copy()
 
     # apply COLOR_BGR2GRAY
     gray_image = cv2.cvtColor(processed_image, cv2.COLOR_BGR2GRAY)
@@ -269,9 +269,20 @@ def auto_adjust(img,
 
     image_processed_result, bounds = get_boundaries(processed_image, contours)
 
+    write_frame(processed_image, '_cropped_before')
+
     image_result = processed_image
     if crop:
         image_result = crop_image(processed_image, bounds)
+
+    write_frame(image_result, '_cropped_after')
+
+    if auto_rotate:
+        processed_image, median_angle, image_rotated_result = auto_rotate_image(
+            image_result)
+    else:
+        median_angle = 0
+        image_rotated_result = image_result.copy()
 
     write_frame(image_result, '_final')
 
