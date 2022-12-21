@@ -134,14 +134,14 @@ def get_boundaries(img, contours, addSpaceTop=20, maxMarginHeight=40, maxMarginW
         if y + h > maxy:
             maxy = y + h
 
-    if (miny > addSpaceTop and addSpaceTop > 0):
+    if (addSpaceTop > 0 and miny > addSpaceTop):
         miny -= addSpaceTop
 
-    if (maxy < minHeightY):
+    if (maxy > 0 and maxy < minHeightY):
         print("adjust maxy", maxy, minHeightY)
         maxy = minHeightY
 
-    if (maxx < minWidthX):
+    if (maxx > 0 and maxx < minWidthX):
         print("adjust maxx", maxx, minWidthX)
         maxx = minWidthX
 
@@ -243,12 +243,12 @@ def auto_adjust(img,
 
     write_frame(img, '_original')
 
-    # if auto_rotate:
-    #     processed_image, median_angle, image_rotated_result = auto_rotate_image(
-    #         processed_image)
-    # else:
-    #     median_angle = 0
-    #     image_rotated_result = img.copy()
+    if auto_rotate:
+        processed_image, median_angle, image_rotated_result = auto_rotate_image(
+            processed_image)
+    else:
+        median_angle = 0
+        image_rotated_result = img.copy()
 
     # apply COLOR_BGR2GRAY
     gray_image = cv2.cvtColor(processed_image, cv2.COLOR_BGR2GRAY)
@@ -295,12 +295,12 @@ def auto_adjust(img,
 
     write_frame(image_result, '_cropped_after')
 
-    if auto_rotate:
-        processed_image, median_angle, image_rotated_result = auto_rotate_image(
-            image_result)
-    else:
-        median_angle = 0
-        image_rotated_result = image_result.copy()
+    # if auto_rotate:
+    #     processed_image, median_angle, image_rotated_result = auto_rotate_image(
+    #         image_result)
+    # else:
+    #     median_angle = 0
+    #     image_rotated_result = image_result.copy()
 
     write_frame(image_result, '_final')
 
