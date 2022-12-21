@@ -109,13 +109,19 @@ def contourOK(img, cc,
     return True
 
 
-def get_boundaries(img, contours):
+def get_boundaries(img, contours, addSpaceTop=20, maxMarginHeight=40, maxMarginWidth=100):
     """Find the boundaries of the photo in the image using contours."""
     ih, iw = img.shape[:2]
     minx = iw
     miny = ih
     maxx = 0
     maxy = 0
+
+    minHeightY = ih - maxMarginHeight
+    minWidthX = iw - maxMarginWidth
+
+    # print("ih", ih, minHeightY)
+    # print("iw", iw, minWidthX)
 
     for cc in contours:
         x, y, w, h = cv2.boundingRect(cc)
@@ -128,8 +134,20 @@ def get_boundaries(img, contours):
         if y + h > maxy:
             maxy = y + h
 
+    if (miny > addSpaceTop and addSpaceTop > 0):
+        miny -= addSpaceTop
+
+    if (maxy < minHeightY):
+        print("adjust maxy", maxy, minHeightY)
+        maxy = minHeightY
+
+    if (maxx < minWidthX):
+        print("adjust maxx", maxx, minWidthX)
+        maxx = minWidthX
+
     # print("get_boundaries", frame, minx, miny, maxx, maxy)
     # rect = (minx, miny, maxx, maxy),
+
     imgBoundary = write_frame(img, '_boundaries_minx{}_miny{}_maxx{}_maxy{}'.format(
         minx, miny, maxx, maxy), rect=(minx, miny, maxx, maxy))
 
