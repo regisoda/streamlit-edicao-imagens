@@ -40,7 +40,7 @@ def main_loop():
 
     st.sidebar.write("")
     st.sidebar.write("")
-    st.sidebar.text("Ajustes manuais:")
+    st.sidebar.text("Aplicar:")
 
     chk_use_threshold = False
     threshold = 0
@@ -55,21 +55,21 @@ def main_loop():
     #     st.write("Threshold:", threshold)
 
     chk_auto_adjust_rotate = st.sidebar.checkbox(
-        'Auto-rotação', False)
+        'Auto-rotação', True)
     chk_show_rotated_image = chk_auto_adjust_rotate
 
-    chk_use_margin = st.sidebar.checkbox(
-        'Configurar ruídos próximos das margens', False)
-    if (chk_use_margin):
-        st.sidebar.write("Desconsiderar:")
-        near_margin_left = st.sidebar.slider(
-            'Qtde de Pixels (Esquerda)', 0, 150, 0)
-        near_margin_top = st.sidebar.slider(
-            'Qtde de Pixels (Superior)', 0, 150, 0)
-        near_margin_right = st.sidebar.slider(
-            'Qtde de Pixels (Direita)', 0, 150, 0)
-        near_margin_bottom = st.sidebar.slider(
-            'Qtde de Pixels (Inferior)', 0, 150, 0)
+    # chk_use_margin = st.sidebar.checkbox(
+    #     'Configurar ruídos próximos das margens', False)
+    # if (chk_use_margin):
+    #     st.sidebar.write("Desconsiderar:")
+    #     near_margin_left = st.sidebar.slider(
+    #         'Qtde de Pixels (Esquerda)', 0, 150, 0)
+    #     near_margin_top = st.sidebar.slider(
+    #         'Qtde de Pixels (Superior)', 0, 150, 0)
+    #     near_margin_right = st.sidebar.slider(
+    #         'Qtde de Pixels (Direita)', 0, 150, 0)
+    #     near_margin_bottom = st.sidebar.slider(
+    #         'Qtde de Pixels (Inferior)', 0, 150, 0)
 
     # ------------------------------------------ #
     # ------------------------------------------ #
@@ -86,7 +86,7 @@ def main_loop():
     st.sidebar.text("")
     st.sidebar.text("")
     st.sidebar.markdown(
-        ":facepunch: Desenvolvido por Régis Oda :copyright: - v0.1")
+        ":facepunch: Desenvolvido por Régis Oda :copyright: - v0.2")
 
     # ------------------------------------------ #
     # ------------------------------------------ #

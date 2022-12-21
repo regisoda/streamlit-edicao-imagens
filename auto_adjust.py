@@ -198,7 +198,11 @@ def auto_rotate_image(img, draw_lines=True):
     write_frame(image_rotated_lines, '_rotate_lines')
 
     if median_angle != 0:
-        image_result = ndimage.rotate(img, median_angle)
+
+        # aplicar rotacao com background branco
+        image_result = ndimage.rotate(img, median_angle, cval=255)
+
+        # image_result = ndimage.rotate(img, median_angle)
         write_frame(image_result, '_rotate_after')
     else:
         write_frame(image_result, '_rotate_after_no')
